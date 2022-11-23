@@ -3,9 +3,11 @@ package com.empresalogistica.aula2;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.RadioAccessSpecifier;
+import android.view.ActionMode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     NumberPicker mNumberPicker;
     EditText mEditText;
     RadioGroup mRadioGroup;
+    Button mBotaoTitulo;
+
     //nome do arquivo sharedPreference
     public static final String ARQUIVO_MEUS_DADOS = "meu arquivo";
     // metodo sharedPreference
@@ -59,20 +63,21 @@ public class MainActivity extends AppCompatActivity {
         mNumberPicker = findViewById(R.id.numberPicker);
         mEditText = findViewById(R.id.editTextTextPersonName2);
         mRadioGroup = findViewById(R.id.radioGroup);
+        mBotaoTitulo = findViewById(R.id.button3);
 
-         mNumberPicker.setMinValue(2000);
-         mNumberPicker.setMaxValue(2022);
+        mNumberPicker.setMinValue(2000);
+        mNumberPicker.setMaxValue(2022);
 
-         mNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-             @Override
-             public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-                 Toast.makeText(MainActivity.this, "Teste do listener!", Toast.LENGTH_SHORT).show();
-             }
-         });
+        mNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                Toast.makeText(MainActivity.this, "Teste do listener!", Toast.LENGTH_SHORT).show();
+            }
+        });
         mBotaoConfirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!mEditText.getText().toString().isEmpty()){
+                if (!mEditText.getText().toString().isEmpty()) {
                     //recupera o valor digitado e o converte para float
                     float valor = Float.parseFloat(mEditText.getText().toString());
 
@@ -82,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     //verifica qual botão radio o usuario seleciono
                     //para definir qual operação q sera feita
                     //metodo q verifica qual radio foi usado getCheckedRadioButtonId()
-                    switch(mRadioGroup.getCheckedRadioButtonId()){
+                    switch (mRadioGroup.getCheckedRadioButtonId()) {
                         case R.id.radioButton3:
                             adicionarValor(ano, valor);
                             break;
@@ -94,5 +99,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        mBotaoTitulo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intente permite a paginação de telas dentro da sua aplicação
+                Intent intent = new Intent(getBaseContext(),Personalizar.class);
+                startActivity(intent);
+            }
+        });
     }
-}
+
+    @Override
+        protected  void onResume(){
+            super.onResume();
+            SharedPreferences sharedPreferences = getSharedPreferences(ARQUIVO_MEUS_DADOS, Context.MODE_PRIVATE);
+            String nomeFantasia = sharedPreferences.getString("nomeFantasia", null);
+            if (nomeFantasia!=null){
+                setTitle(nomeFantasia);
+            }
+            int ano = mNumberPicker.getValue();
+            exibirSaldo(ano);
+        }
+    }
